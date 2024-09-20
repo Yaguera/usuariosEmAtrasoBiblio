@@ -6,7 +6,14 @@ import ctypes
 
 time.sleep(5)
 
-py.PAUSE=0.2
+py.PAUSE=0.3
+
+def has_lowercase(text):
+    
+    # Verifica se há letras minúsculas
+    has_lowercase = any(char.islower() for char in text)
+    
+    return has_lowercase
 
 # Obter a data atual
 data_atual = datetime.now()
@@ -17,8 +24,25 @@ meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'A
 data_por_extenso = f"Fortaleza, {data_atual.day + 1} de {meses[data_atual.month - 1]} de {data_atual.year}"
 
 qtdPaginas = 2
-qtdLinhas = 3
+qtdLinhas = 2
 qtdCards = 3
+
+# Função para calcular coordenadas relativas
+def get_relative_coords(x_rel, y_rel, screen_width, screen_height):
+    screen_resolution = py.size()
+    screen_width_current, screen_height_current = screen_resolution.width, screen_resolution.height
+    x_abs = int(x_rel * screen_width_current / screen_width)
+    y_abs = int(y_rel * screen_height_current / screen_height)
+    return x_abs, y_abs
+
+# Dimensões do monitor original (substitua com as dimensões do monitor em que as coordenadas foram obtidas)
+original_screen_width = 1366
+original_screen_height = 768
+
+# Coordenadas relativas (substitua pelos valores relativos às dimensões do monitor original)
+rel_coords = {
+    'coord_serie': (539, 381)
+}
 
 def get_key_state(key_code):
     """
@@ -43,6 +67,11 @@ for pag in range (qtdPaginas):
             #nome do aluno
             py.hotkey('ctrl','c')
             aluno = pc.paste()
+            if (has_lowercase(aluno)):
+                py.press('down')
+                py.press('left',presses=7)
+                qtdCards += 1
+                continue
             py.press('down')
             py.hotkey('ctrl','c')
             aluno2 = pc.paste()
@@ -74,8 +103,9 @@ for pag in range (qtdPaginas):
 
             #serie
             py.press('enter')
-            py.rightClick(x=439,y=381)
-            py.press('down',presses=6)
+            x, y = get_relative_coords(*rel_coords['coord_serie'], original_screen_width, original_screen_height)
+            py.rightClick(x=x, y=y)
+            py.press('down', presses=6)
             py.press('enter')
             py.hotkey('ctrl','c')
             serie = pc.paste()
@@ -84,7 +114,8 @@ for pag in range (qtdPaginas):
 
             #turno e turma
             py.press('enter')
-            py.rightClick(x=439,y=381)
+            x, y = get_relative_coords(*rel_coords['coord_serie'], original_screen_width, original_screen_height)
+            py.rightClick(x=x, y=y)
             py.press('down',presses=6)
             py.press('enter')
             py.hotkey('ctrl','c')
@@ -93,7 +124,8 @@ for pag in range (qtdPaginas):
             py.press('down')
 
             py.press('enter')
-            py.rightClick(x=439,y=381)
+            x, y = get_relative_coords(*rel_coords['coord_serie'], original_screen_width, original_screen_height)
+            py.rightClick(x=x, y=y)
             py.press('down',presses=6)
             py.press('enter')
             py.hotkey('ctrl','c')
@@ -115,8 +147,7 @@ for pag in range (qtdPaginas):
             py.press('enter', presses=2)
 
             # escrever o ano do aluno
-            py.press('tab')
-            pc.copy("Ano: " + serie[:7] + " / " + turno + turma)
+            pc.copy("Serie: " + serie[:7] + " Turma: " + turno + turma)
             py.hotkey('ctrl','v')
             py.press('enter', presses=2)
 
@@ -145,12 +176,9 @@ for pag in range (qtdPaginas):
                 py.press('up')
                 py.press('up')
                 py.press('up')
-                py.press('up')
                 time.sleep(0.5)
-                py.press('right')
             elif(len(titulos) > 1 and len(titulos) <= 2 ):
                 py.press('delete')
-                py.press('down')
                 py.press('down')
                 pc.copy(data_por_extenso)
                 py.hotkey('ctrl','v')
@@ -163,15 +191,13 @@ for pag in range (qtdPaginas):
                 py.press('up')
                 py.press('up')
                 py.press('up')
-                py.press('up')
                 time.sleep(0.5)
-                py.press('right')
+
             else:
                 py.press('delete')
                 py.press('down')
                 py.press('delete')
                 py.press('down')
-                py.press('down')
                 pc.copy(data_por_extenso)
                 py.hotkey('ctrl','v')
                 py.press('up')
@@ -183,9 +209,7 @@ for pag in range (qtdPaginas):
                 py.press('up')
                 py.press('up')
                 py.press('up')
-                py.press('up')
                 time.sleep(0.5)
-                py.press('right')
 
 
             py.hotkey('alt','tab')
@@ -198,11 +222,10 @@ for pag in range (qtdPaginas):
             py.press('tab', presses=2)
         time.sleep(1)
 
-        for i in range(12):
+        for i in range(11):
             py.press('down')
 
         py.press('home')
-        py.press('right')
 
         for i in range(2):
             with py.hold('alt'):
@@ -221,7 +244,7 @@ for pag in range (qtdPaginas):
     py.press('enter')
 
     #restet
-    for press in range(32):
+    for press in range(22):
         py.press('up')
 
     for i in range(2):
